@@ -13,8 +13,6 @@ require('dotenv').config();
 app.use(express.urlencoded({ extended: true }));
 // Static folder
 app.use(express.static(path.join(__dirname, 'Public')));
-// Morgan logger request from client to server
-app.use(morgan('combined'));
 // Template engine
 app.engine('hbs', handlebars({
     extname: '.hbs'
