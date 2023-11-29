@@ -3,10 +3,12 @@ const User = require('./User');
 const Schema = mongoose.Schema;
 
 const Messages = new Schema({
-  content: { type: String },
-  sender: {type: Schema.Types.ObjectId, ref: 'User'},
-  status: { type: Boolean, required: true },
-  room: { type: Schema.Types.ObjectId, ref: 'Room' },
+  conversationId: { type: String, required: true },
+  sender: { type: String, required: true },
+  content: { type: String, required: true },
+  // sender: {type: Schema.Types.ObjectId, ref: 'User'},
+  // status: { type: Boolean, required: true },
+  // room: { type: Schema.Types.ObjectId, ref: 'Room' },
 }, {
   timestamps: true
 });

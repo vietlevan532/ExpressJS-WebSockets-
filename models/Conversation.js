@@ -3,11 +3,12 @@ const Message = require('./Message');
 const Schema = mongoose.Schema;
 
 const Conversations = new Schema({
-  messages: [Message],
+    members: {type: Array},
+    // messages: [Message],
 }, {
-  timestamps: true
+    timestamps: true
 });
 
-const Conversation = mongoose.model('Room', Conversations);
+const Conversation = mongoose.model('Conversation', Conversations);
 
 module.exports = Conversation;
