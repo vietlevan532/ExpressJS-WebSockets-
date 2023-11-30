@@ -1,68 +1,78 @@
 const User = require('../models/User');
 const bcrypt = require('bcrypt');
-const { response } = require('express');
-const jwt = require('jsonwebtoken');
 
 class AuthController {
-    //[GET] (/auth/register)
+
+    //[GET] (/register)
     renderRegister (req, res, next) {
-        res.send('Register Page');
+        try {
+            res.render('register', { layout: false, message: req.query.message, messageFailed: req.query.messageFailed });
+        } catch (error) {
+            res.status(500).json(error);
+        }
     }
 
-    //[POST] (/auth/registration)
+    //[POST] (/registration)
     register = async (req, res) => {
         try {
-            const { name, email, username, password } = req.body;
+            const { name, gender, email, username, password, confirmPassword } = req.body;
             const checkEmail = await User.findOne({ email: email});
             const checkUsername = await User.findOne({ username: username});
             const hashPassword = await bcrypt.hash(password, await bcrypt.genSalt(10));
             if (checkEmail) {
-                return res.status(400).json({ message: 'Email already exists' });
+                return res.redirect('/register?messageFailed=Email already exists!');
             } else if (checkUsername) {
-                return res.status(400).json({ message: 'Username already exists' });
-            } else {
+                return res.redirect('/register?messageFailed=Username already exists!');
+            } else if (password !== confirmPassword) {
+                return res.redirect('/register?messageFailed=Confirm password is not match!');
+            }else {
                 await User.create({
                     name: name,
                     email: email,
                     username: username,
                     password: hashPassword,
+                    gender: gender,
+                    avatar: 'images/' + req.file.filename
                     //lastActive : Date.parse(lastActive),
                 });
-                res.status(200).json({ message: 'User created successfully' });
+                return res.redirect('/register?message=Register successfully!');
             }
         } catch (error) {
-            res.status(500).json({ error });
+            return res.status(500).json({ error });
         }
     }
 
-    //[GET] (/auth/login)
+    //[GET] (/login)
     renderLogin (req, res, next) {
-        res.send('Login Page');
+        try {
+            res.render('login', { layout: false, message: req.query.message });
+        } catch (error) {
+            res.status(500).json(error);
+        }
     }
 
-    //[POST] (/auth/sign-in)
+    //[POST] (/sign-in)
     login = async (req, res) => {
         try {
-            const {username, password} = req.body;
-            const user = await User.findOne({ username });
+            const {usernameOrEmail, password} = req.body;
+            const user = await User.findOne({
+                $or: [
+                    { username: usernameOrEmail },
+                    { email: usernameOrEmail }
+                ]
+            });
             if (!user) {
-                return res.status(400).json( {message: 'Username does not exist!' });
+                return res.redirect('/login?message=Email or username does not exist!');
             }
             const passwordMatch = await bcrypt.compare(password, user.password);
             if (!passwordMatch) {
-                return res.status(400).json( {message: 'Invalid password!' });
+                return res.redirect('/login?message=Password is not match. Please try again!');
             }
             if (user && passwordMatch) {
                 user.status = true;
                 user.save();
-                const accessToken = jwt.sign({userId: user._id}, process.env.JWT_ACCESS_KEY, {expiresIn:'365d'});
-                res.cookie('accessToken', accessToken, {
-                    httpOnly: true,
-                    secure: false,
-                    path: '/',
-                    sameSite: 'strict'
-                });
-                return res.status(200).json( {message: 'Login successfully!' });
+                req.session.user = user;
+                return res.redirect('/chat-home');
             }
         } catch (error) {
             return res.status(500).json({ error: 'Login failed!' });
@@ -92,9 +102,14 @@ class AuthController {
         }
     }
 
-    //[POST] (/auth/logout)
+    //[GET] (/logout)
     logout = async (req, res) => {
-        response.clearCookie(accessToken);
+        try {
+            req.session.destroy();
+            res.redirect('/');
+        } catch (error) {
+            res.status(500).json(error);
+        }
     }
 }
 

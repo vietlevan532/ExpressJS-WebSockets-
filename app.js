@@ -4,11 +4,12 @@ const path = require('path');
 
 const db = require('./config/mongoose');
 const route = require('./routers');
-const http = require('http');
-const socketIO = require('socket.io');
+// const socketIO = require('socket.io');
 const app = express();
-const server = http.createServer(app);
-const io = socketIO(server);
+const http = require('http').Server(app);
+// const server = http.createServer(app);
+// const io = socketIO(server);
+const handlebarsHelpers = require('./config/helpers');
 
 // Database connection
 db.connect();
@@ -29,7 +30,12 @@ app.engine('hbs', handlebars({
 app.set('view engine', 'hbs');
 app.set('views', './views');
 
+// Handlebars helpers registration
+handlebars.create({
+    helpers: handlebarsHelpers.registerHelpers()
+});
+
 // Router
 route(app)
 
-app.listen(process.env.PORT, () => console.log(`Chat app listening on server http://localhost:${process.env.PORT}`));
+http.listen(process.env.PORT, () => console.log(`Chat app listening on server http://localhost:${process.env.PORT}`));
