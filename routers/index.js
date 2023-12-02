@@ -3,7 +3,7 @@ const conversationRouter = require('./ConversationRouter');
 
 function route(app) {
 
-    //app.use('/conversations', conversationRouter);
+    app.use('/conversations', conversationRouter);
 
     app.use('/', userRouter);
 

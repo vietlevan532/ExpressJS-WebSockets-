@@ -2,28 +2,28 @@ const Conversation = require('../models/Conversation');
 
 class ConversationController {
     
-    // [POST] (/conversations/new-conversation)
-    newConversation = async (req, res) => {
-        const newConversation = new Conversation({
-            members: [req.body.senderId, req.body.receiverId],
-        });
+    // [POST] (/conversations/save-message)
+    saveMessage = async (req, res) => {
         try {
-            const savedConversation = await newConversation.save();
-            res.status(200).json(savedConversation);
+            const conversation = new Conversation({
+                sender: req.body.sender,
+                receiver: req.body.receiver,
+                message: req.body.message
+            });
+            const conversationSaved = await conversation.save();
+            res.status(200).send({ success: true, msg: 'Saved chat!', data: conversationSaved });
         } catch (error) {
-            res.status(500).json(error);
+            res.status(400).send({ success: false, msg: error.message });
         }
     }
 
-    // [GET] (/conversations/:userId)
-    getConversations = async (req, res) => {
+    // [POST] (/conversations/delete-message)
+    deleteMessage = async (req, res) => {
         try {
-            const conversation = await Conversation.find({
-                members: {$in: req.params.userId}
-            });
-            res.status(200).json(conversation);
+            Conversation.deleteOne({ _id: req.body.id });
+            res.status(200).send({ success: true });
         } catch (error) {
-            res.status(500).json(error);
+            res.status(500).send({ success: false, msg: error.message });
         }
     }
 }

@@ -12,9 +12,53 @@
 
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
 
+        <style>
+            .online-status {
+                position: flex; 
+                top: 35px; 
+                right: 21px; 
+                width: 10px; 
+                height: 10px; 
+                background-color: #00bf00; 
+                border-radius: 50%;
+            }
+
+            .offline-status {
+                position: flex; 
+                top: 35px; 
+                right: 21px; 
+                width: 10px; 
+                height: 10px; 
+                background-color: rgba(255, 255, 255, 0); 
+                border-radius: 50%;
+            }
+
+            #chat-container {
+                max-height: 547px;
+                overflow-y: auto;
+                border-radius: 10px; /* Điều này tạo bo tròn cho phần cuộn */
+                scrollbar-color: transparent transparent; /* Ẩn mũi tên thanh cuộn trên Firefox */
+            }
+
+            /* Thanh cuộn cho các trình duyệt ngoại trừ Firefox */
+            #chat-container::-webkit-scrollbar {
+                width: 8px;
+            }
+
+            #chat-container::-webkit-scrollbar-thumb {
+                background-color: transparent; /* Ẩn mũi tên thanh cuộn trên WebKit */
+            }
+
+            #chat-container::-webkit-scrollbar-track {
+                background-color: transparent; /* Màu nền của thanh cuộn */
+            }
+        </style>
+
         <!-- App css -->
         <link href="assets/css/icons.min.css" rel="stylesheet" type="text/css" />
         <link href="assets/css/app.css" rel="stylesheet" type="text/css" id="light-style" />
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.2/socket.io.js" ></script>
 
     </head>
 
