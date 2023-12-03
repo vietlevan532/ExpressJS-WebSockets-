@@ -5,6 +5,9 @@ const conversationController = require('../controllers/ConversationController');
     router.post('/save-message', conversationController.saveMessage);
 
     // [POST] /conversations/delete-message
-    router.post('/delete-message', conversationController.deleteMessage);
+    router.delete('/delete-message', conversationController.deleteMessage);
+
+    // [POST] /conversations/update-message
+    router.post('/update-message', conversationController.updateMessage);
 
 module.exports = router;

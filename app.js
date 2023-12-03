@@ -71,7 +71,18 @@ userNameSpace.on('connection', async function(socket) {
             { sender: data.sender, receiver: data.receiver },
             { sender: data.receiver, receiver: data.sender }
         ]});
-        socket.emit('loadConversations', {conversations: conversations});
+        const receiver = await User.findById(data.receiver);
+        socket.emit('loadConversations', {conversations: conversations, receiver: receiver});
+    });
+
+    // Delete messages 
+    socket.on('messageDeleted', function(id) {
+        socket.broadcast.emit('chatMessageDeleted', id);
+    });
+
+    // Update messages
+    socket.on('messageUpdated', function(data) {
+        socket.broadcast.emit('chatMessageUpdated', data);
     });
 });
 

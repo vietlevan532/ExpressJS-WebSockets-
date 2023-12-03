@@ -72,6 +72,7 @@ class AuthController {
                 user.status = true;
                 user.save();
                 req.session.user = user;
+                res.cookie(`user`, JSON.stringify(user));
                 return res.redirect('/chat-home');
             }
         } catch (error) {
@@ -105,6 +106,7 @@ class AuthController {
     //[GET] (/logout)
     logout = async (req, res) => {
         try {
+            res.clearCookie('user');
             req.session.destroy();
             res.redirect('/');
         } catch (error) {

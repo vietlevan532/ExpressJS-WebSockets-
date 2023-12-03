@@ -1,4 +1,5 @@
 const Conversation = require('../models/Conversation');
+const User = require('../models/User');
 
 class ConversationController {
     
@@ -20,7 +21,21 @@ class ConversationController {
     // [POST] (/conversations/delete-message)
     deleteMessage = async (req, res) => {
         try {
-            Conversation.deleteOne({ _id: req.body.id });
+            await Conversation.deleteOne({ _id: req.body.id });
+            res.status(200).send({ success: true });
+        } catch (error) {
+            res.status(500).send({ success: false, msg: error.message });
+        }
+    }
+
+    // [POST] (/conversations/update-message)
+    updateMessage = async (req, res) => {
+        try {
+            await Conversation.findByIdAndUpdate({ _id: req.body.id }, {
+                $set: {
+                    message: req.body.message
+                }
+            });
             res.status(200).send({ success: true });
         } catch (error) {
             res.status(500).send({ success: false, msg: error.message });
